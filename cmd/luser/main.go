@@ -2,9 +2,8 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"os"
-	"strconv"
 	"strings"
 
 	"github.com/tweekmonster/luser"
@@ -37,23 +36,39 @@ func printgroup(g *luser.Group) {
 }
 
 func main() {
-	for _, arg := range os.Args[1:] {
-		if _, err := strconv.Atoi(arg); err == nil {
-			u, err := luser.LookupId(arg)
-			if err == nil {
+	currentUser := flag.Bool("c", false, "Lookup current user")
+	lookupGroup := flag.Bool("g", false, "Lookup group")
+	flag.Parse()
+
+	if *currentUser {
+		if u, err := luser.Current(); err == nil {
+			if *lookupGroup {
+				if g, err := luser.LookupGroupId(u.Gid); err == nil {
+					printgroup(g)
+				}
+			} else {
 				printuser(u)
 			}
+		}
+		return
+	}
 
+	for _, arg := range flag.Args() {
+		if *lookupGroup {
 			if g, err := luser.LookupGroupId(arg); err == nil {
 				printgroup(g)
-			}
-		} else {
-			if u, err := luser.Lookup(arg); err == nil {
-				printuser(u)
 			}
 
 			if g, err := luser.LookupGroup(arg); err == nil {
 				printgroup(g)
+			}
+		} else {
+			if u, err := luser.LookupId(arg); err == nil {
+				printuser(u)
+			}
+
+			if u, err := luser.Lookup(arg); err == nil {
+				printuser(u)
 			}
 		}
 	}

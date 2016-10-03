@@ -1,6 +1,7 @@
 # luser
 
 [![GoDoc](https://godoc.org/github.com/tweekmonster/luser?status.svg)](https://godoc.org/github.com/tweekmonster/luser)
+[![Build Status](https://travis-ci.org/tweekmonster/luser.svg?branch=master)](https://travis-ci.org/tweekmonster/luser)
 
 `luser` is a drop-in replacement for `os/user` which allows you to lookup users
 and groups in cross-compiled builds without `cgo`.

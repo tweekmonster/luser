@@ -26,15 +26,10 @@
 // You should be able to simply replace 'user.' with 'luser.' (in most cases).
 package luser
 
-import (
-	"os/user"
-	"strings"
-)
+import "os/user"
 
-// Tests if the error was created because cgo wasn't enabled.
-func isCgoErr(err error) bool {
-	return strings.HasSuffix(err.Error(), "requires cgo")
-}
+// Switched to true in current_default.go.  Windows does not use a fallback.
+var fallbackEnabled = false
 
 // Group represents a grouping of users.  Embedded *user.Group reference:
 // https://golang.org/pkg/os/user/#Group
@@ -48,13 +43,13 @@ type Group struct {
 // LookupGroup looks up a group by name. If the group cannot be found, the
 // returned error is of type UnknownGroupError.
 func LookupGroup(name string) (*Group, error) {
+	if fallbackEnabled {
+		return lookupGroup(name)
+	}
+
 	g, err := user.LookupGroup(name)
 	if err == nil {
 		return &Group{Group: g}, err
-	}
-
-	if isCgoErr(err) {
-		return lookupGroup(name)
 	}
 
 	return nil, err
@@ -63,13 +58,13 @@ func LookupGroup(name string) (*Group, error) {
 // LookupGroupId looks up a group by groupid. If the group cannot be found, the
 // returned error is of type UnknownGroupIdError.
 func LookupGroupId(gid string) (*Group, error) {
+	if fallbackEnabled {
+		return lookupGroupId(gid)
+	}
+
 	g, err := user.LookupGroupId(gid)
 	if err == nil {
 		return &Group{Group: g}, err
-	}
-
-	if isCgoErr(err) {
-		return lookupGroupId(gid)
 	}
 
 	return nil, err
@@ -101,13 +96,13 @@ func Current() (*User, error) {
 // Lookup looks up a user by username. If the user cannot be found, the
 // returned error is of type UnknownUserError.
 func Lookup(username string) (*User, error) {
+	if fallbackEnabled {
+		return lookupUser(username)
+	}
+
 	u, err := user.Lookup(username)
 	if err == nil {
 		return &User{User: u}, nil
-	}
-
-	if isCgoErr(err) {
-		return lookupUser(username)
 	}
 
 	return nil, err
@@ -116,13 +111,13 @@ func Lookup(username string) (*User, error) {
 // LookupId looks up a user by userid. If the user cannot be found, the
 // returned error is of type UnknownUserIdError.
 func LookupId(uid string) (*User, error) {
+	if fallbackEnabled {
+		return lookupId(uid)
+	}
+
 	u, err := user.LookupId(uid)
 	if err == nil {
 		return &User{User: u}, nil
-	}
-
-	if isCgoErr(err) {
-		return lookupId(uid)
 	}
 
 	return nil, err

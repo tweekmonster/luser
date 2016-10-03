@@ -14,6 +14,10 @@ var currentUid = -1
 var current *User
 var currentMu sync.Mutex
 
+func init() {
+	fallbackEnabled = true
+}
+
 // The default stub uses $USER and $HOME to fill in the user.  A more reliable
 // method will be tried before falling back to the stub.
 func currentUser() (*User, error) {

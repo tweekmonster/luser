@@ -41,6 +41,7 @@ fallback results on your platform:
 
 ```shell
 $ CGO_ENABLED=0 go install github.com/tweekmonster/luser/cmd/luser
+$ luser -c
 $ luser username
 $ luser 1000
 ```
@@ -48,8 +49,8 @@ $ luser 1000
 
 ## Fallback lookup methods
 
-`os/user`'s functions are tried first and if they return an error indicating
-that `cgo` is required, it falls back to one of the following lookup methods:
+`os/user` functions are used when built with `cgo`.  Otherwise, it falls back
+to one of the following lookup methods:
 
 | Method        | Used for                                                       |
 |---------------|----------------------------------------------------------------|
@@ -69,3 +70,4 @@ uses `syscall` instead of `cgo`.
   are embedded, however (e.g. `u.User`).
 - The lookup methods use `exec.Command()` and will be noticeably slower if
   you're looking up users and groups a lot.
+- Group-releated functions will only be available when compiling with Go 1.7+.

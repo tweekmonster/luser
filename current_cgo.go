@@ -10,5 +10,5 @@ func currentUser() (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return luser(u), nil
+	return &User{User: u}, nil
 }

@@ -6,6 +6,10 @@ import "strconv"
 
 // Lookup a user by username.
 func lookupUser(username string) (*User, error) {
+	if _, err := strconv.Atoi(username); err == nil {
+		return nil, UnknownUserError(username)
+	}
+
 	if dscacheutilExe != "" {
 		u, err := dsUser(username)
 		if err == nil {
@@ -44,6 +48,10 @@ func lookupId(uid string) (*User, error) {
 }
 
 func lookupGroup(name string) (*Group, error) {
+	if _, err := strconv.Atoi(name); err == nil {
+		return nil, UnknownGroupError(name)
+	}
+
 	if dscacheutilExe != "" {
 		g, err := dsGroup(name)
 		if err == nil {

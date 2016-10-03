@@ -46,27 +46,6 @@ func dsParseUser(data []byte) *user.User {
 	return u
 }
 
-func dsParseGroup(data []byte) *user.Group {
-	g := &user.Group{}
-
-	scanner := bufio.NewScanner(bytes.NewReader(data))
-	for scanner.Scan() {
-		line := scanner.Text()
-		if i := strings.Index(line, ": "); i >= 0 {
-			value := line[i+2:]
-
-			switch line[:i] {
-			case "name":
-				g.Name = value
-			case "gid":
-				g.Gid = value
-			}
-		}
-	}
-
-	return g
-}
-
 func dsUser(username string) (*user.User, error) {
 	data, err := command(dscacheutilExe, "-q", "user", "-a", "name", username)
 	if err != nil {
@@ -92,34 +71,6 @@ func dsUserId(uid string) (*user.User, error) {
 
 	if u.Uid != "" && u.Username != "" && u.HomeDir != "" {
 		return u, nil
-	}
-
-	return nil, errNotFound
-}
-
-func dsGroup(group string) (*user.Group, error) {
-	data, err := command(dscacheutilExe, "-q", "group", "-a", "name", group)
-	if err != nil {
-		return nil, err
-	}
-
-	g := dsParseGroup(data)
-	if g.Name != "" && g.Gid != "" {
-		return g, nil
-	}
-
-	return nil, errNotFound
-}
-
-func dsGroupId(group string) (*user.Group, error) {
-	data, err := command(dscacheutilExe, "-q", "group", "-a", "gid", group)
-	if err != nil {
-		return nil, err
-	}
-
-	g := dsParseGroup(data)
-	if g.Name != "" && g.Gid != "" {
-		return g, nil
 	}
 
 	return nil, errNotFound

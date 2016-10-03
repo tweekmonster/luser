@@ -27,15 +27,3 @@ func lookupUser(username string) (*User, error) {
 func lookupId(uid string) (*User, error) {
 	return nil, errWin
 }
-
-func lookupGroup(name string) (*User, error) {
-	return nil, errWin
-}
-
-func lookupGroupId(gid string) (*User, error) {
-	return nil, errWin
-}
-
-func lookupUserGroupIds() ([]string, error) {
-	return nil, ErrListGroups
-}

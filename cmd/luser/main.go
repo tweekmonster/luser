@@ -1,10 +1,10 @@
 // Command luser is a sample program for looking up users or groups.
+
 package main
 
 import (
 	"flag"
 	"fmt"
-	"strings"
 
 	"github.com/tweekmonster/luser"
 )
@@ -25,27 +25,24 @@ Group:   %q
   Luser: %t
 `
 
-func printuser(u *luser.User) {
-	gids, _ := u.GroupIds()
-	fmt.Printf(userStr, u.Username, u.Uid, u.Gid, u.Name, u.HomeDir, u.IsLuser,
-		strings.Join(gids, ", "))
-}
-
-func printgroup(g *luser.Group) {
-	fmt.Printf(groupStr, g.Name, g.Gid, g.IsLuser)
-}
+var currentUser = flag.Bool("c", false, "Lookup current user")
 
 func main() {
-	currentUser := flag.Bool("c", false, "Lookup current user")
-	lookupGroup := flag.Bool("g", false, "Lookup group")
+	flag.Usage = func() {
+		fmt.Println("Usage: luser [options] args...")
+		flag.PrintDefaults()
+	}
+
 	flag.Parse()
+
+	if flag.NArg() == 0 {
+		flag.Usage()
+	}
 
 	if *currentUser {
 		if u, err := luser.Current(); err == nil {
-			if *lookupGroup {
-				if g, err := luser.LookupGroupId(u.Gid); err == nil {
-					printgroup(g)
-				}
+			if lookupGroup != nil && *lookupGroup {
+				checkgroup(u.Gid)
 			} else {
 				printuser(u)
 			}
@@ -54,14 +51,8 @@ func main() {
 	}
 
 	for _, arg := range flag.Args() {
-		if *lookupGroup {
-			if g, err := luser.LookupGroupId(arg); err == nil {
-				printgroup(g)
-			}
-
-			if g, err := luser.LookupGroup(arg); err == nil {
-				printgroup(g)
-			}
+		if lookupGroup != nil && *lookupGroup {
+			checkgroup(arg)
 		} else {
 			if u, err := luser.LookupId(arg); err == nil {
 				printuser(u)

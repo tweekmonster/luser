@@ -21,11 +21,6 @@ func luser(u *user.User) *User {
 	return &User{User: u, IsLuser: true}
 }
 
-// Wrap user.Group with luser.Group
-func lgroup(g *user.Group) *Group {
-	return &Group{Group: g, IsLuser: true}
-}
-
 // Convenience function for running a program and returning the output.
 func command(program string, args ...string) ([]byte, error) {
 	cmd := exec.Command(program, args...)

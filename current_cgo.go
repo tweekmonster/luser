@@ -1,5 +1,5 @@
 // +build !windows
-// +build cgo
+// +build cgo,!osusergo
 
 package luser
 

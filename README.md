@@ -4,7 +4,8 @@
 [![Build Status](https://travis-ci.org/tweekmonster/luser.svg?branch=master)](https://travis-ci.org/tweekmonster/luser)
 
 `luser` is a drop-in replacement for `os/user` which allows you to lookup users
-and groups in cross-compiled builds without `cgo`.
+and groups in cross-compiled builds without `cgo`. It also works with `cgo`
+builds which use the all Go version of `os/user` via the `osusergo` build tag.
 
 
 ## Overview
@@ -42,6 +43,8 @@ fallback results on your platform:
 
 ```shell
 $ CGO_ENABLED=0 go install github.com/tweekmonster/luser/cmd/luser
+# Or in a cgo build with the all Go version of os/user
+$ go install -tags=osusergo github.com/tweekmonster/luser/cmd/luser
 $ luser -c
 $ luser username
 $ luser 1000

@@ -10,14 +10,6 @@ import (
 	"strings"
 )
 
-// GetentParseFiles tells the getent fallback to prefer parsing the
-// '/etc/passwd' and '/etc/group' files instead of executing the 'getent'
-// program.  This is on by default since the speed of parsing the files
-// directly is comparible to the C API and is many times faster than executing
-// the 'getent' program.  If false, the files will still be parsed if 'getent'
-// fails or isn't found.
-var GetentParseFiles = true
-
 var (
 	getentExe      = "" // path to the 'getent' program.
 	passwdFilePath = "" // path to the 'passwd' file.
@@ -41,13 +33,6 @@ func init() {
 // Lookup user by parsing an database file first.  If that fails, try with the
 // 'getent' program.
 func getent(database, key string) (string, error) {
-	if !GetentParseFiles && getentExe != "" {
-		data, err := command(getentExe, database, key)
-		if err == nil {
-			return string(bytes.TrimSpace(data)), nil
-		}
-	}
-
 	dbfile := ""
 	switch database {
 	case "passwd":
@@ -59,6 +44,13 @@ func getent(database, key string) (string, error) {
 	if dbfile != "" {
 		if line, err := searchEntityDatabase(dbfile, key); err == nil {
 			return line, nil
+		}
+	}
+
+	if getentExe != "" {
+		data, err := command(getentExe, database, key)
+		if err == nil {
+			return string(bytes.TrimSpace(data)), nil
 		}
 	}
 
